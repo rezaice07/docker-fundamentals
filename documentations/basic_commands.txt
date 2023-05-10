@@ -1,6 +1,53 @@
 
 
+Docker Command:
+---------------------------------
+To see list of commands: 
+	docker
+	
+Remove Docker Container	
+	docker rm {container_Name}
+	Note: we need to stop it first the container that is running
+		docker stop {container_name}
+		
+		***event we can start it by ----- 
+			docker stop {container_name}
 
-To Run the Docker Container
-	docker run --rm --name hello-world-app -v helloworldappvol:/usr/scr/app --net bridge -p 3000:9000 -e "BASE_URL=172.17.0.2" helloworldapp 
+To see the available containers
+	docker ps
+	
+To check network list
+	docker network ls
+	
+To inspect network 
+	docker network inspect bridge   {bridge is the network}
+	
+To create and run the container 
+	 docker run --net bridge -p 27018:27017 -v mongovol:/data/db --name mongodb mongo
+	 note: 
+		bridge==> network name
+		mongodb ==> container name
+		mongo ==>image name
+		
+	Another Example:
+		docker run --name nodeapp -v nodeappvol:/usr/src/app --net bridge -p 3000:9000 nodeapp
+		--the above one will give us a error of environment variable issue for ip address
+		--now inspect the network 
+		docker network inspect bridge   {bridge is the network}
+		and find the ip address from configurations for IPv4Address
+		
+		"Name": "nodeapp",
+		"EndpointID": "5b4f91136d355711f3fc8f0f45859139976809caf30744688edd2585df35f9b2",
+		"MacAddress": "02:42:ac:11:00:02",
+		"IPv4Address": "172.17.0.2/16",
+		"IPv6Address": ""
+		
+		and the set it as like -e "NODE_APP_HOST=172.17.0.2" 
+
+		now just follow the below command....
+		
+		docker run --name nodeapp -v nodeappvol:/usr/src/app --net bridge -p 3000:9000 -e "NODE_APP_HOST=172.17.0.2" nodeapp
+		
+		new Example:---->
+	    docker run --rm --name hello-world-app -v helloworldappvol:/usr/scr/app --net bridge -p 3000:9000 -e "BASE_URL=172.17.0.2" helloworldapp 
 
