@@ -11,7 +11,7 @@ Remove Docker Container
 		docker stop {container_name}
 		
 		***event we can start it by ----- 
-			docker stop {container_name}
+			docker start {container_name}
 
 To see the available containers
 	docker ps
@@ -42,6 +42,8 @@ To create and run the container
 		"IPv4Address": "172.17.0.2/16",
 		"IPv6Address": ""
 		
+		now set the environmental variable name....
+		
 		and the set it as like -e "NODE_APP_HOST=172.17.0.2" 
 
 		now just follow the below command....
@@ -50,4 +52,120 @@ To create and run the container
 		
 		new Example:---->
 	    docker run --rm --name hello-world-app -v helloworldappvol:/usr/scr/app --net bridge -p 3000:9000 -e "BASE_URL=172.17.0.2" helloworldapp 
+
+
+Installing on Ubuntu:
+--------------------------
+
+Have a look from docker documentation
+	https://docs.docker.com/engine/install/ubuntu/
+	
+check docker services
+	sudo docker ps
+
+Start Docker service
+	sudo service docker start	
+	
+check docker status
+	sudo systemctl status docker
+	
+Check docker version
+	sudo docker version
+	
+To see available docker containers jus follow the command below...
+	sudo docker ps -a
+	
+If you don't see any docker container then should try with following command...
+	sudo docker ps -a
+	
+Check available docker images
+	sudo docker images
+	
+To remove docker image
+	sudo docker rm image {image id or image name}
+	Example: sudo docker rm image 9c7a54a9a43c
+
+To remove docker container of an image
+	sudo docker rm {container id or name}
+	Example: sudo docker rm 9c7a54a9a43c
+	
+To pull base image
+	sudo docker pull [image name]
+	Example: image name = mysql
+	
+To create a container from base image
+	docker run -it --rm -d -p 8080:80 --name web nginx
+	Note: it - interactive terminal
+	      rm - if exist then delete if first
+		  d  - detouched from terminal - container proccess will not close even if trying to close the terminal 
+		  --name web - mentioning the name of container
+		  nginx - base image
+		  
+    **** Remember: if you get permission error just use the following command by root user as like below...
+		 sudo usermod -a -G docker [user]
+	
+To Inspeact docker image 
+	docker image inspect mysql
+
+To attach a docker container 
+	docker attach container-name/ID
+	
+To restart docker container 
+	docker restart container-name/ID
+	
+To stop docker container 
+	docker stop container-name/ID
+	
+Check available variable in a contrainer
+	sudo docker run --env-file.list 
+	
+Running a basic web server:
+---------------------------	
+Run docker container by using volume and mapping with local directory.....
+	docker run -it --rm -d -p 8080:80 --name web -v ~/site-content:/usr/share/nginx/html nginx
+	
+Build Custom NGINX Image
+----------------------------
+
+create a docker file by vim with the name of dockerfile
+
+FROM nginx:latest
+#RUN apt-get update 
+#RUN apt-get install iputils-ping -y
+COPY ./index.html /usr/share/nginx/html/
+
+Note:
+{
+RUN apt-get update 
+RUN apt-get install iputils-ping -y
+} are optional.
+
+Before executing the above list create a folder named as wehshared
+and let's create a index.html file inside it.
+
+Now build image for nginx using below command...
+	docker build . -t nginx:latest
+	note: . means current directory where dockerfile exist
+	
+Now create and run the container
+	sudo docker run -it --rm -d -p 8080:80 --name nginx_web_app nginx:latest
+	
+
+Upload Image to Docker Hub
+---------------------------------
+
+login command...
+	docker login
+	
+After successfull login, now try with.....
+	docker tag nginx:latest rezaice07/nginx:tag_nginx_img
+	docker push rezaice07/nginx:tag_nginx_img
+
+
+	
+	
+	
+
+	
+
 
