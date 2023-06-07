@@ -162,6 +162,62 @@ After successfull login, now try with.....
 	docker push rezaice07/nginx:tag_nginx_img
 
 
+Implementing Votting App
+--------------------------------
+	Ref: https://github.com/dockersamples/example-voting-app
+	
+	#Pull image and then create container and run it first for radis app
+		docker pull redis
+		docker run -d --name=redis redis
+	#Build Image for votting app first [Location: /home/vboxuser/docker_content/example-voting-app/vote]
+		docker build . -t votting-app
+		
+	#Linking Redis with Votting app
+		docker run -d -p 5000:80 --name=votting --link redis:redis votting-app
+		
+	#Pull image and then creaqte container and run it for postgres
+		docker pull postgres:9.4
+		docker run -d --name=db -e POSTGRES_PASSWORD=postgres postgres:9.4
+		
+	#Build Image for worker app [Location: /home/vboxuser/docker_content/example-voting-app/worker]
+		docker build . -t worker-app
+		
+		#Link with db of redis
+			docker run -d --name=worker-link-redis-db --link redis:redis --link db:db worker-app
+			docker run --link redis:redis --link db:db worker-app
+			
+	#Build Image for result app [Location: /home/vboxuser/docker_content/example-voting-app/result]
+		docker build . -t result-app
+		
+	#Linking Redis with result app
+		docker run -d -p 5001:80 --name=result --link db:db result-app
+		
+	Enjoys!......
+	
+	
+Accessing to Docker Terminal:
+-------------------------------------
+	docker exec -it {container_Id} bash
+	or docker exec -it {container_Id} /bin/bash
+	
+Docker compose Dependencies:
+-------------------------------
+	py-pip,python3-dev, libffi-dev, openssl-dev, gcc, libc-dev, rust, cargo and make
+	
+	
+Installing Docker Compose:
+----------------------------
+	#Just follow the link below....
+		https://docs.docker.com/compose/install/standalone/
+	
+		Youtube Link: https://www.youtube.com/watch?v=Ndz3j7OObd0&list=PLzOdtYcAxAiM4_XQrzRmofBJ_ImFkSojg&index=11&ab_channel=CSLCBT-Bangla
+	
+	***** It is needed to run the container from image
+	
+	
+	
+
+
 	
 	
 	
