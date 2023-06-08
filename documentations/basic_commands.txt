@@ -212,7 +212,52 @@ Installing Docker Compose:
 	
 		Youtube Link: https://www.youtube.com/watch?v=Ndz3j7OObd0&list=PLzOdtYcAxAiM4_XQrzRmofBJ_ImFkSojg&index=11&ab_channel=CSLCBT-Bangla
 	
-	***** It is needed to run the container from image
+	***** It is needed to run the containers from multiple images by a single compose command. Let's see using the below command....
+	
+	file name: compose.yaml
+	contents:
+	
+radis:
+ image: redis
+db:
+ image: postgres:9.4
+ restart: always
+ environment:
+  POSTGRES_PASSWORD: postgres
+	
+	
+More example:
+	
+radis:
+	image: redis		
+db:  
+	image: postgres:9.4
+	restart: always
+	environment: 
+		POSTGRES_PASSWORD: postgres			
+vote:
+	image:votting-app
+	ports:
+		- 5000:80
+	links: 
+		- redis			
+result:
+	image: result
+	ports: 
+		- 5001:80
+	links:
+		- db			
+worker:
+	image: worker
+	links:
+		- db
+		- redis
+	
+	# now run the following command....
+	docker-compose -d up;
+
+
+
 	
 	
 	
