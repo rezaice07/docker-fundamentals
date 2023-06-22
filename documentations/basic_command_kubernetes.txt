@@ -1,0 +1,248 @@
+
+
+
+
+Kubernetes
+-----------------------
+
+Installation:
+--------------------
+	#Installation Links:
+		#For minikube:
+			https://minikube.sigs.k8s.io/docs/start/
+		
+		#kubectl
+			https://kubernetes.io/docs/tasks/tools/
+				
+
+Basic Commands:
+-------------------------------
+  start            Starts a local Kubernetes cluster
+  status           Gets the status of a local Kubernetes cluster
+  stop             Stops a running local Kubernetes cluster
+  delete           Deletes a local Kubernetes cluster
+  dashboard        Access the Kubernetes dashboard running within the minikube cluster
+  pause            pause Kubernetes
+  unpause          unpause Kubernetes
+
+Start the kubernetes minikube
+	minikube start
+	
+	note: similarly stop 
+  
+
+Check Available Nodes:
+------------------------------
+	minikube kubectl get nodes
+	
+	
+Checking the status of minikube
+-------------------------------
+vboxuser@ubuntu2204:~$ minikube status
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+
+Checking kubectl version:
+--------------------------------
+	vboxuser@ubuntu2204:~$ minikube kubectl version
+	
+*****Minikube cli: for start up/deleting the cluster
+on the otherhand, kubectl for configuring the minikube cluster
+
+Deleting Cluster:
+-------------------------
+	minikube delete
+	
+
+Check available pods
+-----------------------
+		vboxuser@ubuntu2204:~$ minikube kubectl get pod
+
+Check services
+---------------------------
+	vboxuser@ubuntu2204:~$ minikube kubectl get services
+	NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+	kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   22h
+	
+Creating Pods (this is abstraction process and is created by using deployment)
+-------------------------
+	minikube kubectl -- create deployment nginx-depl --image=nginx
+	Note: You can't create pods in a cluster, it is abstruction process and this can be done by doing deployment
+		
+You can do for checking using below command...
+	vboxuser@ubuntu2204:~$ minikube kubectl get deployment
+	NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+	nginx-depl   1/1     1            1           5m2s
+	
+Deleting Deployment
+-------------------------	
+	vboxuser@ubuntu2204:~$ minikube kubectl -- delete deployment nginx-depl
+	deployment.apps "nginx-depl" deleted
+	
+Checking Pods
+-------------------
+vboxuser@ubuntu2204:~$ minikube kubectl get pod
+NAME                         READY   STATUS    RESTARTS   AGE
+nginx-depl-56cb8b6d7-zvp5v   1/1     Running   0          16s
+
+Editing Deployment
+-------------------------
+	minikube kubectl edit deployment nginx-depl
+	
+	And here we just wanna change the below section...
+	
+	 - image: nginx:1.16
+	and after savinge chages and then get the available pods
+	
+	minikube kubectl get pod	
+	
+Logs
+------------------------------------
+	
+	first we will create a new pod
+	
+	minikube kubectl -- create deployment mongo-depl --image=mongo
+	
+	vboxuser@ubuntu2204:~$ minikube kubectl logs mongo-depl-5ccf565747-qwszf
+	Error from server (BadRequest): container "mongo" in pod "mongo-depl-5ccf565747-qwszf" is waiting to start: ContainerCreating
+	
+	Means that we don't have started the container
+	
+	let's check the describe command......
+	minikube kubectl describe pod mongo-depl-5ccf565747-qwszf
+	
+	
+You do for checking replicaset
+------------------------------------
+vboxuser@ubuntu2204:~$ minikube kubectl get replicaset
+NAME                   DESIRED   CURRENT   READY   AGE
+nginx-depl-56cb8b6d7   1         1         1       16m
+
+
+Apply Command:
+-------------------------------------
+let's create a yaml file for configuration as like below format:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  labels:
+    app: my-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-app
+          image: my-image
+          env:
+            - name: SOME_ENV
+              value: $SOME_ENV
+          ports:
+            - containerPort: 8080
+
+Example:touch nginx-deployment.yaml
+and contents are......
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+			
+			
+Now execute the command...
+	minikube kubectl -- apply -f nginx-deployment.yaml
+
+you do for checking deployments...
+	minikube kubectl get deployment
+
+you do for checking pods also...
+	minikube kubectl get pod
+	
+
+Now we will update the configuration file for replicaset as 1 to 2 and then we'll execute the apply command again
+After applying the command and you can check the deployment and pods 
+Notice: New one pod created due to replicaset is now 2
+
+*****Some basic commands review:
+vboxuser@ubuntu2204:~$ minikube kubectl get nodes
+NAME       STATUS   ROLES           AGE   VERSION
+minikube   Ready    control-plane   9d    v1.26.3
+
+vboxuser@ubuntu2204:~$ minikube kubectl get services
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   9d
+
+vboxuser@ubuntu2204:~$ minikube kubectl get replicaset
+NAME                          DESIRED   CURRENT   READY   AGE
+nginx-depl-56cb8b6d7          1         1         1       52m
+nginx-deployment-6b7f675859   2         2         2       10m
+
+vboxuser@ubuntu2204:~$ minikube kubectl get deployment
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-depl         1/1     1            1           52m
+nginx-deployment   2/2     2            2           10m
+
+
+Kubernetes YAML File Explained - Deployment and Service:
+----------------------------------------------------------
+
+ 
+	
+	
+	
+
+
+
+
+
+
+	
+	
+
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+	
+
+
+

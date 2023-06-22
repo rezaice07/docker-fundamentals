@@ -255,6 +255,38 @@ worker:
 	
 	# now run the following command....
 	docker-compose -d up;
+	
+	
+Docker Networking:
+---------------------------
+	#Inspeact a docker container
+		docker inspect 5e69d5e086e0
+		Note: here 5e69d5e086e0 is the docker container id
+		
+	#Available networks
+		docker network ls
+		
+		NETWORK ID     NAME      DRIVER    SCOPE
+		-------------------------------------------
+		aa77c1968637   bridge    bridge    local
+		cfb3e4b77c44   host      host      local
+		51ec007ede01   none      null      local
+		
+	#Creating a network interface
+		vboxuser@ubuntu2204:~$ docker network create --driver=bridge --subnet=192.168.50.0/24 --gateway=192.168.50.1 bridge_net
+		
+		be32e65a6b378a28e0204f60a42b87e7d4a4e780b4b83bc907db3f5a433aad61
+		
+		vboxuser@ubuntu2204:~$ docker network ls
+		
+	#Inspeact the network driver
+		vboxuser@ubuntu2204:~$ docker inspect be32e65a6b378a28e0204f60a42b87e7d4a4e780b4b83bc907db3f5a433aad61
+	
+	#Now create a container	
+		docker run -d --name=testweb --network=bridge_net --ip 192.168.50.2 -p 3000:80 httpd
+
+		
+	
 
 
 
