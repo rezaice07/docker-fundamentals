@@ -83,7 +83,7 @@ Deleting Deployment
 -------------------------	
 	vboxuser@ubuntu2204:~$ minikube kubectl -- delete deployment nginx-depl
 	deployment.apps "nginx-depl" deleted
-	
+		
 Checking Pods
 -------------------
 vboxuser@ubuntu2204:~$ minikube kubectl get pod
@@ -100,6 +100,13 @@ Editing Deployment
 	and after savinge chages and then get the available pods
 	
 	minikube kubectl get pod	
+		
+Deleting Pod
+-------------------------
+	To see available pods
+		minikube kubectl get pod
+		
+	vboxuser@ubuntu2204:~$ minikube kubectl -- delete pod pod_name
 	
 Logs
 ------------------------------------
@@ -215,6 +222,91 @@ nginx-deployment   2/2     2            2           10m
 
 Kubernetes YAML File Explained - Deployment and Service:
 ----------------------------------------------------------
+*****A deployment is responsible for keeping a set of pods running. 
+*****A service is responsible for enabling network access to a set of pods.
+
+let's create a service yaml file with name as "nginx-service.yaml" 
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+	  
+	  
+For example..........
+file name: nginx-service.yaml
+
+Contents:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+
+#Now Execute the command for applying....
+	minikube kubectl -- applye -f nginx-service.yaml
+	
+#Now check available pods, deployment
+	minikube kubectl get pod
+	minikube kubectl get deployment
+	
+You do for checking the services:
+---------------------------------------------
+vboxuser@ubuntu2204:~$ minikube kubectl get service
+NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+kubernetes      ClusterIP   10.96.0.1       <none>        443/TCP   9d
+nginx-service   ClusterIP   10.98.167.229   <none>        80/TCP    3m45s
+
+Note: kubernetes is the default service
+
+#Describing the particular service
+	vboxuser@ubuntu2204:~$ minikube kubectl describe service nginx-service
+
+#Get more information about the pod
+	vboxuser@ubuntu2204:~$ minikube kubectl get -- pod -o wide
+	
+	NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE       NOMINATED NODE   READINESS GATES
+	nginx-depl-56cb8b6d7-5m4x9          1/1     Running   0          62m   10.244.0.28   minikube   <none>           <none>
+	nginx-deployment-6b7f675859-h5qvh   1/1     Running   0          61m   10.244.0.30   minikube   <none>           <none>
+	nginx-deployment-6b7f675859-nb2pk   1/1     Running   0          62m   10.244.0.29   minikube   <none>           <none>
+
+#We we'll see the deployment in yaml file by using....
+	minikube kubectl get -- deployment nginx-deployment -o yaml
+	
+	copy the deployment configurations in a yaml file
+	
+	minikube kubectl get -- deployment nginx-deployment -o yaml > nginx-deployment-result-yaml
+	
+#let's see in the contents like below command...
+	cat nginx-deployment-result-yaml
+	
+	Note: we can blueprint the deployment by using "nginx-deployment-result-yaml" configuration file
+
+# We can also delete the deployment file 
+	vboxuser@ubuntu2204:~$ minikube kubectl -- delete -f nginx-service.yaml
+	service "nginx-service" deleted
+
+	
+	
+	
+	
+	
+	
+	
+
 
  
 	
